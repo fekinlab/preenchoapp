@@ -1,0 +1,6 @@
+:root{color-scheme:dark;font:16px/1.5 system-ui;background:#08182e;color:#fff}
+body{margin:24px auto;padding:0 18px;min-width:210px;max-width:38rem}h1 span{color:#ff921d}
+button,select{font:inherit;border-radius:8px;border:1px solid #68768a;padding:10px;margin:6px 0}
+button{background:#ff921d;color:#16100b;font-weight:650;cursor:pointer}button:disabled{opacity:.45}
+fieldset{border:1px solid #58657a;border-radius:8px}label{display:block;padding:6px 0}
+p,code,label{overflow-wrap:anywhere}input{accent-color:#ff921d}

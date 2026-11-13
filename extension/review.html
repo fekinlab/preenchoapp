@@ -1,0 +1,9 @@
+<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Revisar preenchimento · Preenchô</title><link rel="stylesheet" href="review.css">
+<h1>Preench<span>ô</span></h1><p>Destino autorizado nesta revisão<br><strong id="origin"></strong></p>
+<fieldset id="choices"><legend>Campos vazios reconhecidos</legend><div id="fields"></div>
+<label>Perfil <select id="profile"><option value="personal">Pessoal</option><option value="professional">Profissional</option></select></label></fieldset>
+<button id="authorize" disabled>Abrir cofre de teste para autorizar</button>
+<button id="apply" hidden>Confirmar preenchimento</button> <button id="cancel">Cancelar</button>
+<p id="status" role="status"></p><details><summary>Configuração do laboratório</summary>Origem desta extensão para o servidor de teste <code id="identity"></code></details>
+<script src="lab-config.js"></script><script src="review.js"></script></html>

@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Preenchô — laboratório de formulários",
-  "version": "0.1.0",
-  "description": "Protótipo de identificação de campos. Não acessa o cofre nem preenche dados reais.",
+  "version": "0.3.0",
+  "description": "Preenchimento experimental por origem e campo, com autorização do cofre de teste.",
   "permissions": [
     "activeTab",
     "scripting"
