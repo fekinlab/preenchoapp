@@ -50,3 +50,9 @@ jobs:
           else:
               raise RuntimeError('Target de aplicativo iOS não encontrado: '+str(schemes))
           PY
+      - name: Empacotar Safari para Mac Intel Monterey
+        run: bash monterey/build.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Preencho-Monterey-Intel
+          path: Preencho-Monterey.zip
