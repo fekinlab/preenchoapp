@@ -13,11 +13,11 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '24'
       - run: node --test tests/*.test.cjs
       - run: python3 -m unittest discover -s tests
-      - run: python3 -m pip install playwright==1.55.0
-      - run: CHROME=$(which google-chrome) python3 tests/browser_qa.py
+      - run: npm install --no-save --package-lock=false puppeteer@25.17.0
+      - run: python3 tests/browser_qa.py
   xcode:
     runs-on: macos-latest
     timeout-minutes: 15
