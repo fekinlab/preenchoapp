@@ -9,6 +9,8 @@ try {
   const extension = (await browser.extensions()).get(id);
   const page = await browser.newPage();
   await page.goto(vault);
+  const ready = p => p.waitForFunction(()=>getComputedStyle(document.querySelector('#splash')).visibility==='hidden' || !document.querySelector('#splash').getClientRects().length);
+  await ready(page);
   const password = randomUUID();
   await page.type('#vault-pass',password);
   await page.type('#vault-confirm',password);
@@ -41,6 +43,7 @@ try {
   r=await review();
   await r.locator('#fields label:first-child input').click();
   const consent=await getPage(vault+'/?extension-approval',()=>r.locator('#authorize').click());
+  await ready(consent);
   await consent.type('#vault-pass',password);
   await consent.locator('#vault-submit').click();
   await consent.locator('dialog[open] button:first-of-type').click();

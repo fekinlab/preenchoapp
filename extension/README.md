@@ -1,8 +1,16 @@
-# Preenchô · extensão experimental 0.3.0
+# Preenchô · extensão experimental 0.3.1
 
 Esta branch continua a v57. O laboratório utiliza o mesmo app.js e um cofre fictício em outra origem. As únicas permissões são activeTab e scripting. A extensão opera por gesto na barra de ferramentas, no documento principal do destino configurado. O formulário de laboratório não possui botão de envio.
 
-## Homologação local no Mac
+## Caminho por duplo clique
+
+1. Descompacte a branch de desenvolvimento e abra **Iniciar no Mac.command**. Uma janela do Terminal pode aparecer durante o ensaio. O iniciador executa os comandos e abre o Chrome com um perfil separado.
+2. Siga o guia que abriu no navegador. Em **Extensões**, ative **Modo do desenvolvedor** e arraste a pasta **extension** destacada pelo Finder. Retorne à aba **Seu primeiro teste**. Os dois botões abrem as origens corretas desta sessão.
+3. Ao terminar, escolha **Encerrar**. Uma nova execução cria um novo par de origens e um novo cofre fictício. A pasta gerada em Downloads pode ser removida quando o teste terminar.
+4. Para Safari no Mac, abra **Preparar Safari.command**. O Xcode abre o projeto gerado. Escolha o app macOS e **My Mac**, clique em ▶ e habilite a extensão em Safari → Ajustes → Extensões. Se o Safari pedir autorização de desenvolvimento para a extensão local sem assinatura, siga a opção para extensões de desenvolvimento do Safari. No cadastro, use a extensão e copie a origem mostrada em **Configuração do laboratório** para a janela **Conectar Safari**. Volte ao guia.
+5. Se o macOS bloquear a execução por política do computador, verifique a procedência do ZIP e use a opção padrão de abertura permitida pelo próprio macOS ou administrador. Chrome em Aplicativos e Python 3.8+ são necessários para o primeiro caminho. O segundo requer Xcode completo. Para iPhone físico consulte a seção específica abaixo; as portas do Mac são exclusivas do próprio Mac.
+
+## Homologação local manual alternativa
 
 1. Faça checkout desta branch. Crie um perfil de navegador de teste. No Chromium, em chrome://extensions, ative o modo do desenvolvedor e carregue a pasta extension/ diretamente. Copie o ID mostrado. Mantenha a pasta carregada no mesmo caminho.
 2. Na raiz do repositório, execute os comandos abaixo em terminais distintos. Substitua ID_DA_EXTENSAO pelo ID instalado. O gerador exige saída vazia e Python 3. Em localhost, a pasta extension/ original já usa as duas portas corretas.
