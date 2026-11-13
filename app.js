@@ -28,6 +28,7 @@ function renderVaultGate(){
  document.getElementById('vault-title').textContent=exists?'Desbloquear cofre':'Criar cofre de teste';
  document.getElementById('vault-submit').textContent=exists?'Desbloquear':'Criar cofre';
  document.getElementById('vault-confirm-wrap').hidden=exists;
+ const confirm=document.getElementById('vault-confirm');confirm.required=!exists;confirm.disabled=exists;
  document.getElementById('vault-import').hidden=!vaultUnlocked||!LEGACY_KEYS.some(k=>localStorage.getItem(k));
  document.getElementById('vault-lock').hidden=!vaultUnlocked;document.getElementById('vault-close').hidden=!vaultUnlocked;
  document.getElementById('vault-pass').value='';
@@ -67,7 +68,7 @@ async function vaultImport(){
  try{await persistVault();for(const k of LEGACY_KEYS)localStorage.removeItem(k);document.getElementById('vault-import').hidden=true;go('home');alert('Dados fictícios antigos migrados e cópias antigas removidas deste navegador.')}
  catch(e){vaultContents=previous;alert('Falha na migração. Dados antigos mantidos.')}
 }
-function vaultShowControls(){const gate=document.getElementById('vault-gate');gate.hidden=false;document.getElementById('vault-title').textContent='Cofre desbloqueado';document.getElementById('vault-submit').hidden=true;document.getElementById('vault-confirm-wrap').hidden=true;document.getElementById('vault-pass').hidden=true;document.getElementById('vault-import').hidden=!LEGACY_KEYS.some(k=>localStorage.getItem(k));document.getElementById('vault-lock').hidden=false;}
+function vaultShowControls(){const gate=document.getElementById('vault-gate');gate.hidden=false;document.getElementById('vault-title').textContent='Cofre desbloqueado';document.getElementById('vault-submit').hidden=true;document.getElementById('vault-confirm-wrap').hidden=true;document.getElementById('vault-confirm').required=false;document.getElementById('vault-confirm').disabled=true;document.getElementById('vault-pass').hidden=true;document.getElementById('vault-import').hidden=!LEGACY_KEYS.some(k=>localStorage.getItem(k));document.getElementById('vault-lock').hidden=false;}
 document.getElementById('vault-form').addEventListener('submit',vaultSubmit);
 document.getElementById('vault-lock').addEventListener('click',vaultLock);
 document.getElementById('vault-import').addEventListener('click',vaultImport);
