@@ -41,7 +41,7 @@ async function vaultSubmit(event){
  const old=localStorage.getItem(VAULT_KEY);
  if(pass.length<12){status.textContent='Use uma senha de pelo menos 12 caracteres.';return}
  if(!old&&pass!==document.getElementById('vault-confirm').value){status.textContent='As senhas não coincidem.';return}
- const btn=document.getElementById('vault-submit');btn.disabled=true;
+ const btn=document.getElementById('vault-submit');btn.disabled=true;status.textContent=old?'Verificando senha e abrindo cofre…':'Criando cofre criptografado…';
  try{
   if(old){
    const record=JSON.parse(old),key=await deriveVaultKey(pass,unb64(record.salt));
@@ -57,7 +57,7 @@ async function vaultSubmit(event){
    localStorage.setItem(VAULT_KEY,JSON.stringify({version:1,kdf:'PBKDF2-SHA256',iterations:600000,salt:b64(salt),iv:b64(iv),ciphertext:b64(encrypted)}));
   }
   vaultUnlocked=true;lastVaultActivity=Date.now();vaultHiddenSince=null;renderVaultGate();go('home');
- }catch(e){vaultKey=null;vaultContents={};vaultUnlocked=false;status.textContent='Não foi possível abrir o cofre. Verifique a senha e tente novamente.'}
+ }catch(e){vaultKey=null;vaultContents={};vaultUnlocked=false;status.textContent=e?.name==='OperationError'?'Senha incorreta ou cofre danificado. Seus dados não foram apagados.':'Falha ao abrir o cofre ('+(e?.name||'erro desconhecido')+'). Seus dados não foram apagados.';console.error('Vault unlock error',e)}
  finally{btn.disabled=false}
 }
 async function vaultImport(){
