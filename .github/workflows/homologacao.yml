@@ -1,0 +1,46 @@
+name: Homologação experimental
+on:
+  push:
+    branches: [dev/extensao-consentimento]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  navegador:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test tests/*.test.cjs
+      - run: python3 -m unittest discover -s tests
+      - run: python3 -m pip install playwright==1.55.0
+      - run: CHROME=$(which google-chrome) python3 tests/browser_qa.py
+  xcode:
+    runs-on: macos-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Gerar projeto com Xcode
+        run: |
+          PYTHONPATH=lab python3 - <<'PY'
+          from pathlib import Path
+          from mac import safari_project
+          print(safari_project(Path('extension').resolve(),Path('build').resolve()))
+          PY
+      - name: Conferir targets e compilar app para simulador
+        run: |
+          python3 - <<'PY'
+          import subprocess as sp,json,pathlib
+          project=next(pathlib.Path('build').rglob('*.xcodeproj'))
+          schemes=json.loads(sp.check_output(['xcodebuild','-list','-json','-project',str(project)]))['project']['schemes']
+          for scheme in schemes:
+              settings=sp.check_output(['xcodebuild','-project',str(project),'-scheme',scheme,'-showBuildSettings'],text=True)
+              if 'iphonesimulator' in settings and 'WRAPPER_EXTENSION = app' in settings:
+                  sp.run(['xcodebuild','-project',str(project),'-scheme',scheme,'-destination','generic/platform=iOS Simulator','CODE_SIGNING_ALLOWED=NO','build'],check=True)
+                  break
+          else:
+              raise RuntimeError('Target de aplicativo iOS não encontrado: '+str(schemes))
+          PY

@@ -64,6 +64,7 @@ window.addEventListener('message', e => {
 });
 $('apply').onclick = async () => {
   if (done || !values) return;
+  if (Date.now() >= deadline) return finish('Autorização expirada.');
   const approved = values;
   finish('Preenchendo…');
   try {

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Preenchô — laboratório de formulários",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Preenchimento experimental por origem e campo, com autorização do cofre de teste.",
   "permissions": [
     "activeTab",
@@ -10,5 +10,6 @@
   "action": {
     "default_title": "Analisar formulário com Preenchô",
     "default_popup": "popup.html"
-  }
+  },
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvOZOcX8f9fpZ14QOXx6owN2gS92hda8UW4iSRid46OWIPe5QhPuhD+etwDCC7FIOZ7L+ryf0lrh0C5vlanT8RuhCP5RBKw8rbHTgWUOimqs6JRlFAyJFNYc0j9X68qyr5QnekaseNZw6oIllxtRlfFs8d2AQsutQwmgTuABWncqZat4A2FRGswh7gKhPo/GKdb/RpO37au0lew2ssVCKL8CyMo+zlJAQNW+wpRokVny+ZELxF400qCjO16cw70TU0F8z7MK+FndrNT3apqJumeu8XAJFhl3d91YS0uN9ZwnThdcViLjvhswJLMk9IUMNg1aS+Z8HjMn9WpMOo5cyTQIDAQAB"
 }

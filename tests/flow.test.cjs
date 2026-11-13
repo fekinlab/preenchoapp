@@ -83,3 +83,21 @@ for (const mode of ['outra origem','outra janela','outro destino','campo proibid
     assert.equal(s.sent.length,1);
   });
 }
+test('referência antiga ao scanner não reutiliza aprovação consumida', () => {
+  const s=scanner(), token=s.review.preview.ticket;
+  assert.equal(s.review.apply(token,{0:'demo@example.invalid'}),1);
+  s.input.value='';
+  assert.equal(s.review.apply(token,{0:'demo@example.invalid'}),null);
+  assert.equal(s.input.value,'');
+});
+test('mensagem duplicada não altera campos ou perfil já em revisão', () => {
+  const s=approval();
+  s.send(); s.send({...s.req,profile:'personal',kinds:['cpf']});
+  s.button.onclick({isTrusted:true});
+  assert.deepEqual(JSON.parse(JSON.stringify(s.sent[1].data.values)),{email:'b@example.invalid'});
+});
+test('cofre recusa autorização fora do prazo mesmo com timer suspenso', () => {
+  const s=approval();
+  s.send(); s.ctx.Date={now:()=>Date.now()+200000}; s.button.onclick({isTrusted:true});
+  assert.equal(s.sent.length,1);
+});

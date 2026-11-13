@@ -30,10 +30,12 @@
     entries.set(id, {el, ...info, form:el.form});
     fields.push({id, kind:info.kind, label:info.label});
   }
+  let consumed = false;
   globalThis.preenchoReview = {
     preview:{ticket, fields, url:startURL},
     apply(request, values) {
-      if (request !== ticket || location.href !== startURL || Date.now() >= expires) return null;
+      if (consumed || request !== ticket || location.href !== startURL || Date.now() >= expires) return null;
+      consumed = true;
       delete globalThis.preenchoReview;
       let filled = 0;
       for (const [id, value] of Object.entries(values)) {
