@@ -1,5 +1,15 @@
 # Registro técnico · 13/11/2026
 
+## Homologação 0.3.1
+
+O pacote do Mac inicia com duplo clique. Ele reserva duas portas livres em loopback, gera configurações que apontam uma para a outra e abre um guia visual. Chrome usa perfil descartável e identidade estável de extensão. A alternativa Safari gera o projeto com Xcode e oferece pareamento explícito com a origem da extensão instalada. A cópia do cofre recebe apenas o script de aprovação do laboratório.
+
+Passaram 50 testes Node e 7 Python, incluindo isolamento HTTP entre origens, proteção de Host, cancelamento, expiração e tentativas de reutilizar consentimento. No Chrome for Testing 157.0.8103.50 o teste ponta a ponta abriu o popup pela ação da extensão, cancelou, reiniciou, desbloqueou o cofre fictício e inseriu apenas o nome. O e-mail permaneceu vazio. Xcode gerou o projeto multiplataforma e compilou o contêiner com a extensão para iOS Simulator, sem assinatura. [Execução em navegador e Xcode](https://github.com/fekinlab/preenchoapp/actions/runs/43516415970).
+
+A primeira tentativa com Playwright e o Chrome do runner falhou ao instalar a extensão. O ensaio passou a usar Puppeteer e Chrome for Testing. Ajustado o gesto de criação do cofre para esperar o fim da tela de abertura. A proteção de uso único agora bloqueia também uma referência antiga ao scanner. O Xcode informou ausência de ícones de distribuição no manifesto; isso não impediu a compilação de desenvolvimento. Permanecem pendentes os gestos no Finder, a permissão real no Safari e Face ID em dispositivo físico. As origens locais do iniciador atendem somente ao próprio Mac. O teste físico com o guia anterior requer origens HTTPS dedicadas acessíveis pelo iPhone.
+
+## Registro anterior · 0.3.0
+
 **Base.** main em f55f1ba. O histórico do projeto registra validação da v57 com Face ID pelo usuário. O app contém cofre AES-GCM com PBKDF2-SHA256 (600.000 iterações), desbloqueio opcional WebAuthn PRF, perfis e demonstração de mesma origem. O protótipo MV3 no commit 0f59906 introduziu a revisão simulada; f55f1ba corrigiu a normalização. A árvore da base não continha suíte de testes versionada. O relato anterior de 11 casos é histórico.
 
 **Auditoria inicial.** A extensão aceitava o primeiro sinal coincidente, mapeava given-name e family-name para nome completo e pré-selecionava os resultados. O demo legado transmite uma lista de dados a uma página irmã, sem seleção individual. O armazenamento v57 compartilha a origem com qualquer outro código servido no mesmo host. A função persistVault faz gravações assíncronas sem serialização entre abas; no laboratório, faça as edições em uma única aba e aguarde a confirmação de salvamento. Trabalho futuro no app estável exige regressão própria.

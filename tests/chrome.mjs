@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import {mkdir} from 'node:fs/promises';
 import { randomUUID } from 'node:crypto';
 import puppeteer from 'puppeteer';
 const [vault, target, path, origin] = process.argv.slice(2);
@@ -35,6 +36,7 @@ try {
     assert.equal(await r.$eval('#origin',el=>el.textContent),target);
     return r;
   }
+  await mkdir('evidencias',{recursive:true});
   let r=await review();
   assert.equal((await r.$$('input:checked')).length,0);
   await r.locator('#cancel').click();
@@ -42,15 +44,19 @@ try {
   await r.close();
   r=await review();
   await r.locator('#fields label:first-child input').click();
+  await r.screenshot({path:'evidencias/01-revisao.png'});
   const consent=await getPage(vault+'/?extension-approval',()=>r.locator('#authorize').click());
   await ready(consent);
   await consent.type('#vault-pass',password);
   await consent.locator('#vault-submit').click();
+  await consent.waitForSelector('dialog[open]');
+  await consent.screenshot({path:'evidencias/02-consentimento.png'});
   await consent.locator('dialog[open] button:first-of-type').click();
   await r.locator('#apply').click();
   await r.waitForFunction(()=>document.querySelector('#status').textContent.includes('1 de 1'));
   assert.equal(await page.$eval('[autocomplete=name]',el=>el.value),'Pessoa Teste');
   assert.equal(await page.$eval('[type=email]',el=>el.value),'');
   assert.equal(new URL(page.url()).origin,target);
+  await page.screenshot({path:'evidencias/03-resultado.png'});
   console.log(await browser.version(),'OK: autorização, cancelamento e preenchimento seletivo.');
 } finally { await browser.close(); }

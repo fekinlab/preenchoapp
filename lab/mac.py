@@ -83,7 +83,6 @@ def main():
     parser.add_argument('--safari',action='store_true')
     args = parser.parse_args()
     with ExitStack() as stack:
-        # A stable extension directory is required for Chrome's unpacked installation.
         # Keep each run separate so two launches never overwrite a live configuration.
         out = Path(tempfile.mkdtemp(prefix='Preencho-Lab-',dir=Path.home()/'Downloads'))
         identity = chrome_origin()
