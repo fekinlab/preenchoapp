@@ -1,0 +1,1 @@
+'use strict';const form=document.getElementById('registration'),status=document.getElementById('status');form.addEventListener('submit',e=>{e.preventDefault();status.textContent='Teste concluído! Nenhum dado foi enviado.'});form.addEventListener('reset',()=>{status.textContent='Campos limpos.'});
