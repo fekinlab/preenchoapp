@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "Preenchô — laboratório de formulários",
+  "version": "0.1.0",
+  "description": "Protótipo de identificação de campos. Não acessa o cofre nem preenche dados reais.",
+  "permissions": [
+    "activeTab",
+    "scripting"
+  ],
+  "action": {
+    "default_title": "Analisar formulário com Preenchô",
+    "default_popup": "popup.html"
+  }
+}
