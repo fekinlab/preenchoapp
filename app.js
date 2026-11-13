@@ -20,7 +20,7 @@ async function persistVault(){
  const ciphertext=await crypto.subtle.encrypt({name:'AES-GCM',iv},vaultKey,encoder.encode(JSON.stringify(vaultContents)));
  localStorage.setItem(VAULT_KEY,JSON.stringify({...record,iv:b64(iv),ciphertext:b64(ciphertext)}));
 }
-function vaultLock(){vaultUnlocked=false;vaultKey=null;vaultContents={};renderVaultGate()}
+function vaultLock(){vaultUnlocked=false;vaultKey=null;vaultContents={};go('home');renderVaultGate()}
 function renderVaultGate(){
  const gate=document.getElementById('vault-gate');if(!gate)return;
  gate.hidden=vaultUnlocked;
