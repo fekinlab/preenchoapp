@@ -24,7 +24,7 @@ function vaultLock(){vaultUnlocked=false;vaultKey=null;vaultContents={};renderVa
 function renderVaultGate(){
  const gate=document.getElementById('vault-gate');if(!gate)return;
  gate.hidden=vaultUnlocked;
- const exists=!!localStorage.getItem(VAULT_KEY);
+ const exists=!!localStorage.getItem(VAULT_KEY);document.getElementById('vault-pass').hidden=false;document.getElementById('vault-submit').hidden=false;
  document.getElementById('vault-title').textContent=exists?'Desbloquear cofre':'Criar cofre de teste';
  document.getElementById('vault-submit').textContent=exists?'Desbloquear':'Criar cofre';
  document.getElementById('vault-confirm-wrap').hidden=exists;
