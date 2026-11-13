@@ -13,8 +13,8 @@ app=$(find "$RUNNER_TEMP/intel/Build/Products" -name '*.app' -maxdepth 2 -print 
 ditto "$app" "$out/Preencho Lab.app"
 for bundle in "$out/Preencho Lab.app" "$out/Preencho Lab.app"/Contents/PlugIns/*.appex; do
  bin=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$bundle/Contents/Info.plist")
- lipo -verify_arch x86_64 "$bundle/Contents/MacOS/$bin"
- vtool -show-build "$bundle/Contents/MacOS/$bin" | grep -E 'minos 12\.0'
+ lipo "$bundle/Contents/MacOS/$bin" -verify_arch x86_64
+ xcrun vtool -show-build "$bundle/Contents/MacOS/$bin" | grep -E 'minos 12\.0'
 done
 codesign --verify --deep --strict "$out/Preencho Lab.app"
 ditto -c -k --keepParent "$out" Preencho-Monterey.zip
