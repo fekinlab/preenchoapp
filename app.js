@@ -20,7 +20,7 @@ async function persistVault(){
  const ciphertext=await crypto.subtle.encrypt({name:'AES-GCM',iv},vaultKey,encoder.encode(JSON.stringify(vaultContents)));
  localStorage.setItem(VAULT_KEY,JSON.stringify({...record,iv:b64(iv),ciphertext:b64(ciphertext)}));
 }
-function vaultLock(){vaultUnlocked=false;vaultKey=null;vaultContents={};go('home');renderVaultGate()}
+function vaultLock(){vaultUnlocked=false;vaultKey=null;vaultContents={};vaultHiddenSince=null;go('home');renderVaultGate()}
 function renderVaultGate(){
  const gate=document.getElementById('vault-gate');if(!gate)return;
  gate.hidden=vaultUnlocked;
@@ -55,7 +55,7 @@ async function vaultSubmit(event){
    const encrypted=await crypto.subtle.encrypt({name:'AES-GCM',iv},vaultKey,encoder.encode('{}'));
    localStorage.setItem(VAULT_KEY,JSON.stringify({version:1,kdf:'PBKDF2-SHA256',iterations:600000,salt:b64(salt),iv:b64(iv),ciphertext:b64(encrypted)}));
   }
-  vaultUnlocked=true;renderVaultGate();go('home');
+  vaultUnlocked=true;lastVaultActivity=Date.now();vaultHiddenSince=null;renderVaultGate();go('home');
  }catch(e){vaultKey=null;vaultContents={};vaultUnlocked=false;status.textContent='Não foi possível abrir o cofre. Verifique a senha e tente novamente.'}
  finally{btn.disabled=false}
 }
@@ -115,3 +115,26 @@ document.addEventListener('submit',event=>{
  if(action==='saveData(event)')saveData(event);
  if(action==='saveProfessional(event)')saveProfessional(event);
 });
+
+
+/* Bloqueio automático: 5 min sem atividade ou 30 s em segundo plano. */
+const VAULT_IDLE_MS=5*60*1000,VAULT_BACKGROUND_MS=30*1000;
+let lastVaultActivity=Date.now(),vaultHiddenSince=null;
+function vaultTouch(){if(vaultUnlocked&&!document.hidden)lastVaultActivity=Date.now()}
+function vaultAutoCheck(){
+ if(!vaultUnlocked)return;
+ const now=Date.now();
+ if(document.hidden){
+  if(vaultHiddenSince===null)vaultHiddenSince=now;
+  if(now-vaultHiddenSince>=VAULT_BACKGROUND_MS)vaultLock();
+ }else if((vaultHiddenSince!==null&&now-vaultHiddenSince>=VAULT_BACKGROUND_MS)||now-lastVaultActivity>=VAULT_IDLE_MS){
+  vaultLock();
+ }
+}
+['pointerdown','keydown','touchstart'].forEach(type=>document.addEventListener(type,vaultTouch,{passive:true}));
+document.addEventListener('visibilitychange',()=>{
+ if(document.hidden){vaultHiddenSince=Date.now()}
+ else{vaultAutoCheck();vaultHiddenSince=null}
+});
+window.addEventListener('focus',vaultAutoCheck);
+setInterval(vaultAutoCheck,5000);
