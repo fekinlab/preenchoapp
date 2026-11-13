@@ -157,6 +157,7 @@ async function vaultImport(){
 }
 function vaultShowControls(){const gate=document.getElementById('vault-gate');gate.hidden=false;document.getElementById('vault-title').textContent='Cofre desbloqueado';document.getElementById('vault-submit').hidden=true;document.getElementById('vault-confirm-wrap').hidden=true;document.getElementById('vault-confirm').required=false;document.getElementById('vault-confirm').disabled=true;document.getElementById('vault-pass').hidden=true;document.getElementById('vault-import').hidden=!LEGACY_KEYS.some(k=>localStorage.getItem(k));document.getElementById('vault-lock').hidden=false;}
 document.getElementById('vault-form').addEventListener('submit',vaultSubmit);
+document.getElementById('vault-bio').addEventListener('click',bioUnlock);
 document.getElementById('vault-lock').addEventListener('click',vaultLock);
 document.getElementById('vault-import').addEventListener('click',vaultImport);
 document.getElementById('vault-close').addEventListener('click',()=>{if(vaultUnlocked)document.getElementById('vault-gate').hidden=true});
