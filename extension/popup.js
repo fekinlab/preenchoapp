@@ -5,8 +5,9 @@ function classify(f){
  const a=(f.autocomplete||'').toLowerCase().split(/\s+/);
  const ac={'name':'name','given-name':'name','family-name':'name','email':'email','tel':'phone','bday':'birth','postal-code':'zip','street-address':'street','address-line1':'street','address-level2':'city','address-level1':'state','organization':'company','organization-title':'role'};
  for(const token of a)if(ac[token])return ac[token];
- const raw=[f.name,f.id,f.label,f.placeholder].join(' ').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/([a-z])([A-Z])/g,'$1 $2');
- const rules=[['cnpj',/\bcnpj\b/],['cpf',/\bcpf\b/],['rg',/\brg\b|identidade/],['birth',/nascimento|birth|birthday|data nasc/],['zip',/\bcep\b|postal|zip/],['email',/e.?mail/],['phone',/telefone|celular|whatsapp|\bphone\b|\btel\b/],['street',/endereco|logradouro|rua|avenida|street|address/],['number',/numero|number|\bnro\b/],['city',/cidade|\bcity\b/],['state',/estado|\buf\b|\bstate\b/],['company',/empresa|company|organizacao|razao social/],['role',/cargo|profissao|occupation|job title/],['name',/nome|\bname\b/]];
+ if((f.autocomplete||'').toLowerCase().split(/\s+/).includes('off'))return null;
+ const raw=[f.name,f.id,f.label,f.placeholder].join(' ').replace(/([a-z])([A-Z])/g,'$1 $2').replace(/[_-]+/g,' ').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+ const rules=[['cnpj',/\bcnpj\b/],['cpf',/\bcpf\b/],['rg',/\brg\b|identidade/],['birth',/nascimento|birth|birthday|data nasc/],['zip',/\bcep\b|postal|zip/],['email',/e.?mail/],['phone',/telefone|celular|whatsapp|\bphone\b|\btel\b/],['street',/endereco|logradouro|rua|avenida|street|address/],['number',/\bnumero\b|\bnumber\b|\bnro\b|\bnum\b/],['city',/cidade|\bcity\b/],['state',/estado|\buf\b|\bstate\b/],['company',/empresa|company|organizacao|razao social/],['role',/cargo|profissao|occupation|job title/],['name',/\bnome\b|\bname\b/]];
  for(const [key,re] of rules)if(re.test(raw))return key;
  if(f.type==='email')return 'email';
  if(f.type==='tel')return 'phone';
