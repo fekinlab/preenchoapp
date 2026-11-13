@@ -1,25 +1,25 @@
-# Preenchô — laboratório de extensão (v0.1)
+# Preenchô — laboratório de extensão (v0.2)
 
-Protótipo de extensão Manifest V3 para **identificar a estrutura** de formulários em uma página, após clique explícito do usuário.
+Extensão experimental Manifest V3 para **reconhecer e revisar campos de formulários**, após ação explícita do usuário.
 
-## Segurança e escopo
-- **Não lê os valores** digitados nos campos.
-- **Não acessa** o cofre do Preenchô, localStorage, senha ou dados pessoais.
-- **Não preenche nem envia** formulários.
-- Permissões limitadas a `activeTab` e `scripting`; não usa permissões amplas para todos os sites.
-- Não há conexão com servidor ou coleta de dados.
-- Os metadados de campos aparecem apenas no popup local.
+## O que funciona
+- Ao clicar em **Analisar campos desta página**, lê somente metadados de até 100 campos da aba ativa (nome, ID, rótulo, placeholder, tipo e autocomplete).
+- Reconhece possíveis campos de nome, e-mail, telefone, CPF, CNPJ, endereço, empresa e outros.
+- Exibe a lista para o usuário marcar ou desmarcar e clicar em **Revisar seleção (simulação)**.
+- Não acessa valores digitados, cofre, senha, chave criptográfica ou localStorage do Preenchô.
+- Não preenche, não envia dados e não acessa servidores.
 
-## Como testar
-Carregue a pasta `extension/` como extensão descompactada em navegador Chromium de desenvolvimento que suporte Manifest V3. Abra uma página de teste e clique no ícone da extensão → **Analisar campos desta página**.
+## Como testar no computador
+No navegador Chromium de desenvolvimento, carregue a pasta `extension/` como extensão descompactada. Abra uma página de formulário e clique na extensão → **Analisar campos desta página** → revise os campos → **Revisar seleção (simulação)**.
 
-**Safari no iPhone:** estes arquivos não são instaláveis diretamente no Safari. É necessário empacotar uma Safari Web Extension com Xcode, assinar e distribuir um app contêiner para iOS. Esse processo ainda não foi realizado. A compatibilidade do código com Safari também precisa ser validada.
+## Limitações
+- Identificação heurística: nomes ambíguos podem ser classificados incorretamente; o usuário deve revisar.
+- O popup não guarda seleção e não fornece preenchimento real.
+- Safari no iPhone requer empacotamento como Safari Web Extension via Xcode, assinatura e app contêiner iOS; ainda não disponível.
+- Não usar dados reais. Falta auditoria de segurança.
 
 ## Próximas etapas
-1. Mapear campos conhecidos (nome, e-mail, CPF, telefone, endereço) sem coletar valores existentes.
-2. Mostrar prévia dos campos e solicitar confirmação antes de preencher.
-3. Criar ponte autenticada entre extensão e cofre, sem transmitir senha ou chave bruta.
-4. Testar em páginas controladas, depois sites de terceiros com autorização.
-5. Auditoria de segurança e privacidade antes de qualquer dado real.
-
-**Importante:** não confundir este protótipo de inspeção com preenchimento em sites reais.
+1. Criar testes de classificação e identificação de formulários dinâmicos.
+2. Projetar a ponte de autorização entre extensão e cofre, evitando exposição de senha/chave.
+3. Integrar preenchimento **somente após** confirmação por campo, com validação de origem.
+4. Empacotar e testar no Safari em ambiente controlado.
