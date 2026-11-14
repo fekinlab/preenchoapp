@@ -26,10 +26,12 @@ def origins(name,domain):
     return tuple(f'https://{name}-{port}.{domain}' for port in (8173,8174))
 
 def main():
-    vault,target=origins(os.environ['CODESPACE_NAME'],os.environ['GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN'])
+    vault,target=origins(os.environ['CODESPACE_NAME'],os.environ.get('GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN','app.github.dev'))
     with ExitStack() as stack:
         root=Path(stack.enter_context(TemporaryDirectory()))
         package(root,vault,target,os.environ.get('PREENCHO_SAFARI_ORIGIN','safari-web-extension://unpaired'))
+        for role in ('vault','target'):
+            (root/role/'qa-health.txt').write_text(f'preencho-{role}-v2\n')
         servers=[stack.enter_context(ThreadingHTTPServer(('127.0.0.1',port),partial(Static,directory=str(root/site))))
                  for port,site in [(8173,'vault'),(8174,'target')]]
         print(vault,target,flush=True)

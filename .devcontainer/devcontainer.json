@@ -1,10 +1,21 @@
 {
   "name": "Preenchô QA privado",
   "image": "mcr.microsoft.com/devcontainers/python:1-3.12-bookworm",
-  "forwardPorts": [8173, 8174],
+  "forwardPorts": [
+    8173,
+    8174
+  ],
   "portsAttributes": {
-    "8173": {"label":"Cofre fictício","visibility":"private","onAutoForward":"silent"},
-    "8174": {"label":"Cadastro fictício","visibility":"private","onAutoForward":"silent"}
+    "8173": {
+      "label": "Cofre fictício",
+      "visibility": "private",
+      "onAutoForward": "silent"
+    },
+    "8174": {
+      "label": "Cadastro fictício",
+      "visibility": "private",
+      "onAutoForward": "silent"
+    }
   },
-  "postStartCommand": "nohup python3 lab/codespaces_qa.py >/tmp/preencho-qa.log 2>&1 </dev/null &"
+  "postStartCommand": "sh lab/start_qa.sh"
 }
