@@ -3,6 +3,11 @@ on:
   push:
     branches: [dev/extensao-consentimento]
   workflow_dispatch:
+    inputs:
+      qa_peer:
+        description: 'DNS do peer privado de QA (vazio seleciona studious spork)'
+        type: string
+        required: false
 permissions:
   contents: read
 jobs:
@@ -37,6 +42,7 @@ jobs:
           name: Preencho-Safari-Ensaio
           path: entrega/
   xcode:
+    if: github.ref == 'refs/heads/dev/extensao-consentimento'
     runs-on: macos-latest
     timeout-minutes: 15
     steps:
@@ -44,18 +50,15 @@ jobs:
       - run: python3 -m unittest discover -s tests
       - name: Gerar projeto com Xcode
         env:
-          QA_CODESPACE: ${{ vars.PREENCHO_QA_CODESPACE }}
+          QA_PEER: ${{ inputs.qa_peer || vars.PREENCHO_QA_PEER }}
         run: |
           PYTHONPATH=lab python3 - <<'PY'
           from pathlib import Path
           from mac import safari_project
-          from safari_https import package
-          root=Path('safari-qa').resolve()
+          from safari_build import configure
           import os
-          from codespaces_qa import origins
-          name=os.environ.get('QA_CODESPACE') or 'studious-spork-9q6rg6v7x973pp96'
-          hosts=origins(name,'app.github.dev') if name else ('https://cofre.qa.example','https://cadastro.qa.example')
-          package(root,*hosts,'safari-web-extension://unpaired')
+          root=Path('safari-qa').resolve()
+          print(*configure(root, os.environ.get('QA_PEER')))
           print(safari_project(root/'extension',Path('build').resolve()))
           PY
       - name: Conferir targets e compilar app para simulador
@@ -76,3 +79,15 @@ jobs:
         run: bash monterey/build.sh
       - name: Compilar iniciador integrado para assinatura posterior
         run: bash monterey/integrar.sh
+      - name: Verificar e arquivar candidato para assinatura
+        run: |
+          python3 monterey/verificar_recursos.py "$RUNNER_TEMP/Preencho.app" safari-qa
+          ditto -c -k --keepParent "$RUNNER_TEMP/Preencho.app" Preencho-Para-Assinatura.zip
+          shasum -a 256 Preencho-Para-Assinatura.zip > Preencho-Para-Assinatura.sha256
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Preencho-Intel-Para-Assinatura
+          path: |
+            Preencho-Para-Assinatura.zip
+            Preencho-Para-Assinatura.sha256
+          if-no-files-found: error
