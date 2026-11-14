@@ -2,6 +2,12 @@
 from contextlib import ExitStack
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from threading import Thread
+from pathlib import Path
+import sys
+from tempfile import TemporaryDirectory
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'lab'))
+from mac import start
 from playwright.sync_api import sync_playwright
 
 
@@ -50,3 +56,14 @@ with ExitStack() as stack:
     assert event.value.suggested_filename == 'controle.dev'
     assert event.value.path().stat().st_size == 0
     print('WebKit: acesso negado sem sessão, 302 + cookie + HTML renderizado, anexo vazio baixado.')
+
+    directory = Path(stack.enter_context(TemporaryDirectory()))
+    vault, target = start(stack, directory, 'safari-web-extension://unpaired')
+    for url, selector in ((vault, '#vault-gate'), (target, 'input[name="cpf_cliente"]')):
+        for path in ('/', '/index.html'):
+            response = page.goto(url + path)
+            assert response.status == 200
+            assert response.headers['content-type'].split(';')[0] == 'text/html'
+            assert 'content-disposition' not in response.headers
+            assert page.locator(selector).is_visible()
+    print('WebKit: cofre e cadastro reais renderizados em ambas as rotas no loopback.')
