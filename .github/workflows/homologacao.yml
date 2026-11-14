@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       qa_peer:
-        description: 'DNS do peer privado de QA (vazio seleciona studious spork)'
+        description: 'DNS do peer privado de QA (vazio inicia laboratório no próprio Mac)'
         type: string
         required: false
 permissions:
@@ -50,7 +50,7 @@ jobs:
       - run: python3 -m unittest discover -s tests
       - name: Gerar projeto com Xcode
         env:
-          QA_PEER: ${{ inputs.qa_peer || vars.PREENCHO_QA_PEER }}
+          QA_PEER: ${{ inputs.qa_peer }}
         run: |
           PYTHONPATH=lab python3 - <<'PY'
           from pathlib import Path
@@ -84,10 +84,19 @@ jobs:
           python3 monterey/verificar_recursos.py "$RUNNER_TEMP/Preencho.app" safari-qa
           ditto -c -k --keepParent "$RUNNER_TEMP/Preencho.app" Preencho-Para-Assinatura.zip
           shasum -a 256 Preencho-Para-Assinatura.zip > Preencho-Para-Assinatura.sha256
+          cp monterey/{assinar-local.sh,notarizar.sh,COMECE-AQUI.md} .
+          bash -n assinar-local.sh
+          bash -n notarizar.sh
+          ext=$(find "$RUNNER_TEMP/Preencho.app/Contents/PlugIns" -name '*.appex' -maxdepth 1)
+          codesign -d --entitlements :- "$ext" > "$RUNNER_TEMP/ext.plist"
+          test "$(/usr/libexec/PlistBuddy -c 'Print :com.apple.security.app-sandbox' "$RUNNER_TEMP/ext.plist")" = true
       - uses: actions/upload-artifact@v4
         with:
           name: Preencho-Intel-Para-Assinatura
           path: |
             Preencho-Para-Assinatura.zip
             Preencho-Para-Assinatura.sha256
+            assinar-local.sh
+            notarizar.sh
+            COMECE-AQUI.md
           if-no-files-found: error

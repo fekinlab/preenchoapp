@@ -30,6 +30,14 @@ def verify(app, sites):
     approved = json.loads(config.split(' = ', 1)[1].removesuffix(';'))
     if host['PreenchoTarget'] != approved['target']:
         raise ValueError('Destino do iniciador divergente.')
+    if approved['target'] == 'http://localhost:8174':
+        resources = app / 'Contents/Resources/Laboratorio'
+        for name in ('vault', 'target'):
+            for file in (sites / name).iterdir():
+                if file.read_bytes() != (resources / name / file.name).read_bytes():
+                    raise ValueError('Recurso do laboratório divergente: ' + file.name)
+        if not (resources / 'server.pl').is_file():
+            raise ValueError('Servidor integrado ausente.')
     print('App Intel contém extensão Safari, recursos e destino conferidos.')
 
 
