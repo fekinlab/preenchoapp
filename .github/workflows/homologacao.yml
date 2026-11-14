@@ -43,13 +43,19 @@ jobs:
       - uses: actions/checkout@v4
       - run: python3 -m unittest discover -s tests
       - name: Gerar projeto com Xcode
+        env:
+          QA_CODESPACE: ${{ vars.PREENCHO_QA_CODESPACE }}
         run: |
           PYTHONPATH=lab python3 - <<'PY'
           from pathlib import Path
           from mac import safari_project
           from safari_https import package
           root=Path('safari-qa').resolve()
-          package(root,'https://cofre.qa.example','https://cadastro.qa.example','safari-web-extension://unpaired')
+          import os
+          from codespaces_qa import origins
+          name=os.environ.get('QA_CODESPACE')
+          hosts=origins(name,'app.github.dev') if name else ('https://cofre.qa.example','https://cadastro.qa.example')
+          package(root,*hosts,'safari-web-extension://unpaired')
           print(safari_project(root/'extension',Path('build').resolve()))
           PY
       - name: Conferir targets e compilar app para simulador
