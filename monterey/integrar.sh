@@ -11,6 +11,26 @@ cp -R "$old/Preencho Lab.app/Contents/PlugIns" "$app/Contents/"
 # Match the generated host identifier (may include a platform suffix).
 host=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$old/Preencho Lab.app/Contents/Info.plist")
 /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier $host" "$plist"
+# Use an Intel launcher linked for Monterey, independent of the runner's applet stub.
+cat > "$RUNNER_TEMP/Launcher.swift" <<'SWIFT'
+import AppKit
+let app = NSApplication.shared
+app.setActivationPolicy(.accessory)
+let path = Bundle.main.bundlePath + "/Contents/"
+let scriptURL = URL(fileURLWithPath: path + "Resources/Scripts/main.scpt")
+var issue: NSDictionary?
+if let script = NSAppleScript(contentsOf: scriptURL, error: &issue) {
+    script.executeAndReturnError(&issue)
+}
+if let details = issue {
+    let alert = NSAlert()
+    alert.messageText = "Preenchô"
+    alert.informativeText = details.description
+    alert.runModal()
+}
+SWIFT
+xcrun swiftc -target x86_64-apple-macos12.0 "$RUNNER_TEMP/Launcher.swift" -o "$app/Contents/MacOS/applet"
+/usr/libexec/PlistBuddy -c 'Set :LSMinimumSystemVersion 12.0' "$plist" || /usr/libexec/PlistBuddy -c 'Add :LSMinimumSystemVersion string 12.0' "$plist"
 lipo "$app/Contents/MacOS/applet" -verify_arch x86_64
 # osacompile uses the runner OS applet stub: reject stubs too new for Monterey.
-xcrun vtool -arch x86_64 -show-build "$app/Contents/MacOS/applet"
+xcrun vtool -arch x86_64 -show-build "$app/Contents/MacOS/applet" | grep -E 'minos 12\.0'
