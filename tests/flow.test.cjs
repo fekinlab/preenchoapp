@@ -49,10 +49,10 @@ test('navegação, ticket divergente e expiração não autorizam escrita', () =
     assert.equal(s.input.value,'');
   }
 });
-function approval() {
+function approval(identity) {
   const nodes=[], handlers={}, sent=[];
   const peer={closed:false,postMessage:(data,to)=>sent.push({data,to})};
-  const config={target:origin,vault:'http://localhost:8173',extension:'chrome-extension://'+'a'.repeat(32)};
+  const config={target:origin,vault:'http://localhost:8173',extension:identity || 'chrome-extension://'+'a'.repeat(32)};
   const ctx={ location:{search:'?extension-approval',origin:config.vault}, opener:peer,
     approvalConfig:config, addEventListener:(name,fn)=>handlers[name]=fn, close(){}, setTimeout(){},
     vaultUnlocked:true, DATA_KEY:'p',PROFILE_KEY:'b',
@@ -61,7 +61,7 @@ function approval() {
   ctx.window=ctx;ctx.top=ctx;
   vm.runInNewContext(script('lab/approval.js'),ctx);
   const req={type:'review',origin,ticket:webcrypto.randomUUID(),profile:'professional',kinds:['email']};
-  return {ctx, sent, button:nodes[3], req, send:(data=req,source=peer,from=config.extension)=>handlers.message({data,source,origin:from})};
+  return {ctx, sent, button:nodes[3], handlers, req, send:(data=req,source=peer,from=config.extension)=>handlers.message({data,source,origin:from})};
 }
 test('o cofre libera apenas o campo autorizado do perfil profissional após clique', () => {
   const s=approval();s.send();
@@ -100,4 +100,11 @@ test('cofre recusa autorização fora do prazo mesmo com timer suspenso', () => 
   const s=approval();
   s.send(); s.ctx.Date={now:()=>Date.now()+200000}; s.button.onclick({isTrusted:true});
   assert.equal(s.sent.length,1);
+});
+
+test('cofre sem pareamento permanece inativo', () => {
+  const s = approval('safari-web-extension://unpaired');
+  assert.equal(s.sent.length, 0);
+  assert.equal(s.handlers.message, undefined);
+  assert.equal(s.button, undefined);
 });

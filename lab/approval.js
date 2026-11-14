@@ -4,7 +4,7 @@
   if (location.search !== '?extension-approval' || !window.opener || window.top !== window) return;
   const peer = window.opener;
   const cfg = globalThis.approvalConfig;
-  if (location.origin !== cfg.vault) return;
+  if (location.origin !== cfg.vault || cfg.extension === 'safari-web-extension://unpaired') return;
   const personal = ['name','birth','cpf','rg','email','phone','zip','street','number','complement','neighborhood','city','state'];
   const business = ['company','cnpj','role'];
   const dialog = document.createElement('dialog'), title = document.createElement('h2'),
