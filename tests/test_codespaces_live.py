@@ -20,8 +20,18 @@ class Startup(unittest.TestCase):
             for port,role in [(8173,'vault'),(8174,'target')]:
                 with urlopen(f'http://127.0.0.1:{port}/qa-health.txt',timeout=3) as response:
                     self.assertEqual(response.read().decode().strip(),f'preencho-{role}-v2')
-            with urlopen('http://127.0.0.1:8173/') as response:
-                self.assertIn(b'vault-gate',response.read())
+                bodies = []
+                marker = b'vault-gate' if role == 'vault' else b'cpf_cliente'
+                for path in ('/', '/index.html'):
+                    with urlopen(f'http://127.0.0.1:{port}{path}', timeout=3) as page:
+                        self.assertEqual(page.status, 200)
+                        self.assertEqual(page.headers.get_content_type(), 'text/html')
+                        self.assertIsNone(page.headers.get('Content-Disposition'))
+                        body = page.read()
+                        self.assertIn(marker, body)
+                        self.assertEqual(len(body), int(page.headers['Content-Length']))
+                        bodies.append(body)
+                self.assertEqual(*bodies)
             with self.assertRaises(HTTPError) as error:
                 urlopen('http://127.0.0.1:8174/approval-config.js')
             self.assertEqual(error.exception.code,404)

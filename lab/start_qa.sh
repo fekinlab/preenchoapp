@@ -13,7 +13,7 @@ nohup python3 -u lab/codespaces_qa.py >"$log" 2>&1 </dev/null &
 pid=$!
 i=0
 while [ "$i" -lt 30 ]; do
-  if healthy; then echo "Cofre e cadastro disponíveis."; exit 0; fi
+  if healthy; then echo "Cofre e cadastro disponíveis no servidor local. HTTPS privado requer verificação separada."; exit 0; fi
   if ! kill -0 "$pid" 2>/dev/null; then break; fi
   sleep 0.2
   i=$((i+1))
