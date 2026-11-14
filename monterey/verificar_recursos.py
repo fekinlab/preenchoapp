@@ -15,6 +15,13 @@ def verify(app, sites):
     if (not plugin['CFBundleIdentifier'].startswith(host['CFBundleIdentifier'] + '.') or
             plugin['NSExtension']['NSExtensionPointIdentifier'] != 'com.apple.Safari.web-extension'):
         raise ValueError('Identidade ou tipo da extensão inesperado.')
+    for key in ('CFBundleVersion', 'CFBundleShortVersionString'):
+        if not host.get(key) or host[key] != plugin.get(key):
+            raise ValueError('Versões do app e da extensão divergentes.')
+    for bundle, metadata in ((app, host), (extension, plugin)):
+        binaries = list((bundle / 'Contents/MacOS').iterdir())
+        if len(binaries) != 1 or binaries[0].name != metadata['CFBundleExecutable']:
+            raise ValueError('Executável extra no bundle de distribuição.')
     source = sites / 'extension'
     manifest, = (extension / 'Contents/Resources').rglob('manifest.json')
     data = json.loads(manifest.read_text())

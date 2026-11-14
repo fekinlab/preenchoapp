@@ -11,6 +11,10 @@ cp -R "$old/Preencho Lab.app/Contents/PlugIns" "$app/Contents/"
 # Match the generated host identifier (may include a platform suffix).
 host=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$old/Preencho Lab.app/Contents/Info.plist")
 /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier $host" "$plist"
+for key in CFBundleVersion CFBundleShortVersionString; do
+  value=$(/usr/libexec/PlistBuddy -c "Print :$key" "$old/Preencho Lab.app/Contents/Info.plist")
+  /usr/libexec/PlistBuddy -c "Set :$key $value" "$plist" || /usr/libexec/PlistBuddy -c "Add :$key string $value" "$plist"
+done
 # Use an Intel launcher linked for Monterey, independent of the runner's applet stub.
 if [[ "$target" == http://localhost:8174 ]]; then
   lab="$app/Contents/Resources/Laboratorio"
