@@ -23,6 +23,15 @@ jobs:
           name: Roteiro-visual-Chrome
           path: evidencias/
           if-no-files-found: error
+      - name: Preparar e testar ensaio local sem executável
+        run: |
+          mkdir entrega
+          python3 monterey/preview.py 'entrega/ABRIR NO SAFARI.html'
+          node monterey/preview-test.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Preencho-Safari-Ensaio
+          path: entrega/
   xcode:
     runs-on: macos-latest
     timeout-minutes: 15
@@ -52,7 +61,5 @@ jobs:
           PY
       - name: Empacotar Safari para Mac Intel Monterey
         run: bash monterey/build.sh
-      - uses: actions/upload-artifact@v4
-        with:
-          name: Preencho-Monterey-Intel
-          path: Preencho-Monterey.zip
+      - name: Compilar iniciador integrado para assinatura posterior
+        run: bash monterey/integrar.sh

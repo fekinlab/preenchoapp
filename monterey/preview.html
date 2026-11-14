@@ -1,0 +1,35 @@
+<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'none'; form-action 'none'; base-uri 'none'">
+<title>Preenchô · Ensaio Safari</title><style>html{background:#08192f;color:#f2f6fb;font:18px/1.5 system-ui}body{max-width:36rem;margin:3rem auto;padding:1rem}section{background:#19314d;padding:1rem;margin:1rem 0;border-radius:12px}button,input{font:inherit;padding:.35rem}button{cursor:pointer}label{display:block;margin:.6rem 0}h1 span{color:#ff983e}</style>
+<h1>Preench<span>ô</span></h1><p>Ensaio local com dados fictícios. Esta página testa o reconhecimento, a seleção e a escrita. O cofre e a extensão entre sites requerem o aplicativo assinado.</p>
+<section><h2>① Cadastro de teste</h2><label>Nome completo <input id="nome" autocomplete="name"></label><label>E-mail <input id="email" type="email"></label></section>
+<section><h2>② Escolha o que liberar</h2><div id="choices"></div><button id="review" disabled>Revisar</button><p id="preview"></p><button id="apply" hidden>Confirmar preenchimento</button> <button id="cancel">Cancelar</button></section>
+<p id="status" role="status">Marque apenas o nome e clique em Revisar.</p><button id="reset">Recomeçar</button>
+<script>
+globalThis.labConfig={target:location.origin};
+__CLASSIFIER__
+__SCANNER__
+const $=id=>document.getElementById(id);
+const session=globalThis.preenchoReview;
+const fields=session.preview.fields;
+const values={name:'Pessoa Teste',email:'demo@example.invalid'};
+let approved=null;
+for(const f of fields){
+ const label=document.createElement('label'), box=document.createElement('input');
+ box.type='checkbox'; box.value=f.id;
+ label.append(box,document.createTextNode(f.label)); $('choices').append(label);
+}
+const selected=()=>Array.from($('choices').querySelectorAll(':checked'),el=>fields.find(f=>f.id===el.value));
+$('choices').onchange=()=>{$('review').disabled=!selected().length;};
+$('review').onclick=()=>{
+ const items=selected(); if(!items.length)return;
+ approved=Object.fromEntries(items.map(f=>[f.id,values[f.kind]]));
+ $('preview').textContent=items.map(f=>f.label+' → '+values[f.kind]).join(' · ');
+ for(const box of $('choices').querySelectorAll('input'))box.disabled=true;
+ $('apply').hidden=false;$('review').disabled=true;
+};
+function finish(msg){approved=null;$('choices').inert=true;$('review').disabled=true;$('apply').hidden=true;$('cancel').disabled=true;$('status').textContent=msg;}
+$('apply').onclick=()=>{if(approved){const n=session.apply(session.preview.ticket,approved);finish(n===null?'Revisão expirada. Recomece.':n+' campo(s) preenchido(s). Confira o cadastro acima.');}};
+$('cancel').onclick=()=>finish('Cancelado. Nenhum campo preenchido.');
+$('reset').onclick=()=>location.reload();
+</script></html>
