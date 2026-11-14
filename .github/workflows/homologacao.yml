@@ -18,6 +18,10 @@ jobs:
       - run: python3 -m unittest discover -s tests
       - run: npm install --no-save --package-lock=false puppeteer@25.17.0
       - run: python3 tests/browser_qa.py
+      - name: Exercitar consentimento entre origens HTTPS com TLS validado
+        run: |
+          command -v certutil || (sudo apt-get update && sudo apt-get install -y libnss3-tools)
+          python3 tests/https_qa.py
       - uses: actions/upload-artifact@v4
         with:
           name: Roteiro-visual-Chrome
@@ -43,7 +47,10 @@ jobs:
           PYTHONPATH=lab python3 - <<'PY'
           from pathlib import Path
           from mac import safari_project
-          print(safari_project(Path('extension').resolve(),Path('build').resolve()))
+          from safari_https import package
+          root=Path('safari-qa').resolve()
+          package(root,'https://cofre.qa.example','https://cadastro.qa.example','safari-web-extension://unpaired')
+          print(safari_project(root/'extension',Path('build').resolve()))
           PY
       - name: Conferir targets e compilar app para simulador
         run: |

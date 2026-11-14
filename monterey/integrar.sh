@@ -5,8 +5,8 @@ app="$RUNNER_TEMP/Preencho.app"
 osacompile -o "$app" monterey/launcher.applescript
 plist="$app/Contents/Info.plist"
 /usr/libexec/PlistBuddy -c 'Set :CFBundleIdentifier studio.fekin.preencho.lab' "$plist" || /usr/libexec/PlistBuddy -c 'Add :CFBundleIdentifier string studio.fekin.preencho.lab' "$plist"
-mkdir -p "$app/Contents/Resources/Lab"
-cp -R "$old/vault" "$old/target" "$old/server.pl" "$app/Contents/Resources/Lab/"
+target=$(python3 -c 'import json; print(json.loads(open("safari-qa/vault/approval-config.js").read().split(" = ",1)[1].rstrip(";"))["target"])')
+/usr/libexec/PlistBuddy -c "Add :PreenchoTarget string $target" "$plist"
 cp -R "$old/Preencho Lab.app/Contents/PlugIns" "$app/Contents/"
 # Match the generated host identifier (may include a platform suffix).
 host=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$old/Preencho Lab.app/Contents/Info.plist")
